@@ -33,7 +33,7 @@ def cli_main():
     dataloaders = [
         cli.datamodule.train_dataloader(),
         cli.datamodule.val_dataloader(),
-        # cli.datamodule.test_dataloader(),
+        cli.datamodule.test_dataloader(),
     ]
     best = cli.trainer.validate(cli.model, dataloaders=dataloaders, ckpt_path="best")
 
@@ -47,6 +47,5 @@ def cli_main():
 
 if __name__ == "__main__":
     cli_main()
-    # note: it is good practice to implement the CLI in a function and call it in the main if block
 
     # python src/main_cli.py --config configs/config_mf.yaml
