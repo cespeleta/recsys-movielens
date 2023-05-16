@@ -4,10 +4,6 @@ Script to overfit 1 batch: useful for quickly debugging or trying to overfit on 
 This is a sanity check to check that our implementation works. This will train
 over and over and validate on the same batch. The network should be able to 
 overfit this batch, if it does not it means that there is a bug in our implementation.
-
-
-TODO: Next experiment:
-Brute force between learning rate and embedding size (for completeness)
 '
 
 EXPERIMENT_NAME="overfit_batches"
