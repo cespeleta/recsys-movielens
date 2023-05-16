@@ -46,20 +46,12 @@ def title_item_duplicates(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# def train_test_split(df):
-#     ratings = df.copy()
-#     ratings = shuffle(ratings)
-#     train_size = int(0.75 * ratings.shape[0])
-#     train_df = ratings.iloc[:train_size]
-#     test_df = ratings.iloc[train_size:]
-#     return train_df, test_df
-
-
 def encode_category(
     df: pd.DataFrame, column: str, save_file: str | Path = None
 ) -> dict[str, int]:
     values = df[column].unique()
-    mapping = {v: int(i) for i, v in enumerate(values)}
+    mapping = {v: int(i) for i, v in enumerate(values, start=1)}
+    mapping["missing"] = 0
     if save_file:
         dump(mapping, save_file)
         print(f"Saving Mapping in file: {save_file}")

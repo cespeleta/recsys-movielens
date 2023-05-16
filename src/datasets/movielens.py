@@ -3,7 +3,6 @@ from typing import Optional
 
 import pandas as pd
 import torch
-import torchvision
 from lightning import LightningDataModule
 from torch.utils.data import DataLoader, Dataset
 
@@ -68,7 +67,9 @@ class MovielensDataModule(LightningDataModule):
         ratings = add_movie_titles(ratings, movie_titles)
         ratings = title_item_duplicates(ratings)
 
-        train, valid = train_test_split(ratings)
+        train, test = train_test_split(ratings)
+        train, valid = train_test_split(train)
+        # print(test.shape, test.timestamp.min(), test.timestamp.max() )
 
         # Preprocess categorical columns
         self.path_encoders_dataset.mkdir(parents=True, exist_ok=True)
@@ -83,17 +84,18 @@ class MovielensDataModule(LightningDataModule):
             column="title",
             save_file=self.path_encoders_dataset / "title_encoder.joblib",
         )
-        for df in [train, valid]:
-            df.loc[:, "user_enc"] = df["user_id"].map(user2int).fillna(-1).astype("int")
-            df.loc[:, "title_enc"] = df["title"].map(title2int).fillna(-1).astype("int")
+        for df in [train, valid, test]:
+            df.loc[:, "user_enc"] = df["user_id"].map(user2int).fillna(0).astype("int")
+            df.loc[:, "title_enc"] = df["title"].map(title2int).fillna(0).astype("int")
 
         # Remove new users and movies (items)
         valid = valid.query("user_enc >= 0 and title_enc >= 0")
+        test = test.query("user_enc >= 0 and title_enc >= 0")
 
         # Scale target between 0 and 1
         save_file = self.path_encoders_dataset / "target_encoder.joblib"
         target_encoder = target_scaler(train, column="rating", save_file=save_file)
-        for df in [train, valid]:
+        for df in [train, valid, test]:
             df.loc[:, "rating_scaled"] = target_encoder.transform(
                 df.loc[:, "rating"].values.reshape(-1, 1)
             )
@@ -103,6 +105,7 @@ class MovielensDataModule(LightningDataModule):
         print(f"Saving datasets in folder: {self.path_processed_dataset}")
         train.to_pickle(self.path_processed_dataset / f"{self.dataset}_train.pkl")
         valid.to_pickle(self.path_processed_dataset / f"{self.dataset}_valid.pkl")
+        test.to_pickle(self.path_processed_dataset / f"{self.dataset}_test.pkl")
         print("Processing raw data finished")
 
     def prepare_data(self) -> None:
@@ -123,10 +126,13 @@ class MovielensDataModule(LightningDataModule):
         df_valid = pd.read_pickle(
             self.path_processed_dataset / f"{self.dataset}_valid.pkl"
         )
+        df_test = pd.read_pickle(
+            self.path_processed_dataset / f"{self.dataset}_test.pkl"
+        )
 
         # Load processed datasets
-        self.n_users = df_train.user_id.nunique()  # 943
-        self.n_items = df_train.title_enc.nunique()  # 1625
+        self.n_users = df_train.user_id.nunique()
+        self.n_items = df_train.title_enc.nunique()
         assert (
             df_train.item_id.nunique()
             == df_train.title.nunique()
@@ -143,6 +149,11 @@ class MovielensDataModule(LightningDataModule):
             users=df_valid.user_enc.values,
             items=df_valid.title_enc.values,
             ratings=df_valid[self.target].values,
+        )
+        self.test_ds = MovieDataset(
+            users=df_test.user_enc.values,
+            items=df_test.title_enc.values,
+            ratings=df_test[self.target].values,
         )
 
     def train_dataloader(self) -> DataLoader:
@@ -175,5 +186,6 @@ class MovielensDataModule(LightningDataModule):
 
 if __name__ == "__main__":
     dm = MovielensDataModule(dataset="ml-100k", target="rating", batch_size=64)
+    dm.prepare_data()
     dm.setup(stage="fit")
-    # print(next(iter(dm.train_dataloader())))
+    print(next(iter(dm.train_dataloader())))
