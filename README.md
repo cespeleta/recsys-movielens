@@ -25,9 +25,14 @@ In this project, different models have been used to predict the ratings, among w
 | MatrixFactorizationWithBias 	| 1.09          | 6.96          | 1.04       	| 1.507         |
 | NeuralCollaborativeFiltering  | 0.8305      	| 2.5212        | 0.9113        | 1.081         |
 
-MatrixFactorization: results from lightning_logs/lr_finder/version_0
-MatrixFactorizationWithBias: results from lightning_logs/embedding_dim/version_2
-NeuralCollaborativeFiltering: results from lightning_logs/lr_finder/version_2
+<i>
+MatrixFactorization: results from lightning_logs/lr_finder/version_0</br>
+MatrixFactorizationWithBias: results from lightning_logs/embedding_dim/version_2<br>
+NeuralCollaborativeFiltering: results from lightning_logs/lr_finder/version_2</i><br>
+</br>
+Example of the experiment of the embedding_size for the model MatrixFactorixationWithBias in Tensorboard
+
+![Experiment in Tensorboard](images/experiment-tensorboard.png)
 
 # Installation
 
