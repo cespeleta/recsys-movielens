@@ -162,3 +162,5 @@ cython_debug/
 # Do not include folders with data
 /input
 /output
+/lightning_logs
+poetry.lock
