@@ -30,7 +30,7 @@ MatrixFactorization: results from lightning_logs/lr_finder/version_0</br>
 MatrixFactorizationWithBias: results from lightning_logs/embedding_dim/version_2<br>
 NeuralCollaborativeFiltering: results from lightning_logs/lr_finder/version_2</i><br>
 </br>
-Example of the experiment of the embedding_size for the model MatrixFactorixationWithBias in Tensorboard
+Example of the embedding_size experiment for the model MatrixFactorixationWithBias using Tensorboard
 
 ![Experiment in Tensorboard](images/experiment-tensorboard.png)
 
