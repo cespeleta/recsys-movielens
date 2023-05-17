@@ -164,3 +164,4 @@ cython_debug/
 /output
 /lightning_logs
 poetry.lock
+.DS_Store
